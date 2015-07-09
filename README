@@ -1,0 +1,23 @@
+Prototype Python bindings for the PAPI library for hardware
+performance monitoring.
+
+To build, edit setup.py to point papi_dir to the root of your PAPI
+installation.  Then install as normal python package.
+
+Usage:
+
+import pypapi
+import numpy as np
+
+events = np.asarray([pypapi.Event.L1_DCM, pypapi.Event.TOT_CYC],
+                    dtype=pypapi.EventType)
+
+pypapi.start_counters(events)
+
+# Do some work
+
+counts = np.empty(2, dtype=pypapi.CountType)
+
+pypapi.stop_counters(counts)
+
+print counts

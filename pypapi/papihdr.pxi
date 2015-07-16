@@ -152,3 +152,6 @@ cdef extern from "papi.h":
     int PAPI_ipc(float *, float *, long long *, float *)
 
     int PAPI_library_init(int)
+
+    long long PAPI_get_real_cyc()
+    long long PAPI_get_real_usec()

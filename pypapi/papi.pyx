@@ -330,3 +330,27 @@ def ipc():
     CHKERR(PAPI_ipc(&real_time, &proc_time, &ins, &ipc))
 
     return (real_time, proc_time, ins, ipc)
+
+
+def get_cycles_time():
+    """
+    Return real cycle counts and timings
+
+    Uses PAPI_get_real_{cyc,usec}
+    """
+    cdef long long cycles, usec
+
+    cycles = PAPI_get_real_cyc()
+    usec = PAPI_get_real_usec()
+
+    return cycles, usec
+
+
+def get_real_cyc():
+    """Return total number of cycles since some arbitrary start point"""
+    return PAPI_get_real_cyc()
+
+
+def get_real_usec():
+    """Return total number of microseconds since some arbitrary start point"""
+    return PAPI_get_real_usec()

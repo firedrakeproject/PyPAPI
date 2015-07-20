@@ -1,11 +1,10 @@
 from __future__ import absolute_import
 
 # Event types
-from pypapi.papi import Event, initialize, EventType, CountType
+from pypapi.papi import *    # noqa: flake8 can't deal with Cython
 
-# Counters
-from pypapi.papi import num_counters, start_counters, read_counters, accum_counters, \
-    stop_counters, flips, flops, ipc
+from pypapi.papi import populate_events
 
-# Timers
-from pypapi.papi import get_cycles_time, get_real_cyc, get_real_usec
+populate_events()
+
+del populate_events

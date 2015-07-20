@@ -4,6 +4,10 @@ performance monitoring.
 To build, edit setup.py to point papi_dir to the root of your PAPI
 installation.  Then install as normal python package.
 
+Supported events on the current platform are automatically initialised
+as class members of the pypapi.Event object.  The print representation
+reports any information PAPI has about the event.
+
 Usage:
 
 import pypapi

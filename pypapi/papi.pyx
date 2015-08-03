@@ -36,12 +36,24 @@ class PAPIError(RuntimeError):
 
 class Event(object):
     """A PAPI Event."""
+    __events__ = []
+
+    @classmethod
+    def describe_events(cls):
+        """Describe all :class:`Event`\s"""
+        print "Supported events:"
+        print "*****************\n"
+        for event in cls.__events__:
+            ev = getattr(cls, event)
+            print ev
+            print ""
+
     def __init__(self, native, info):
         self.code = info["event_code"]
         self.name = info["symbol"]
-        self.description = info["short_descr"]
-        self.long_description = info["long_descr"]
-        self.typ = "Native" if native else "Preset"
+        self.description = info["short_descr"].strip()
+        self.long_description = info["long_descr"].strip()
+        self.typ = "native" if native else "preset"
         self.available = info["count"] > 0
         self._info = info
 
@@ -52,10 +64,20 @@ class Event(object):
         return self.code
 
     def __str__(self):
-        return "%s event %s: %s\n%s" % (self.typ,
-                                        self.name,
-                                        self.description,
-                                        self.long_description)
+        shortdescr = ""
+        longdescr = ""
+        if self.description is not "":
+            shortdescr=" measuring %s" % self.description
+        if self.long_description is not "":
+            longdescr = "Additional description: %s" % self.long_description
+
+        return """pypapi.{clsname}.{name}
+  A {typ} event{shortdescr}
+  {longdescr}""".format(clsname=type(self).__name__,
+                   name=self.name,
+                   typ=self.typ,
+                   shortdescr=shortdescr,
+                   longdescr=longdescr)
 
     def __repr__(self):
         return "%s(%s, %s)" % (type(self).__name__,
@@ -250,8 +272,10 @@ def populate_events():
                 CHKERR(PAPI_get_event_info(code, &info))
                 event = Event(native, info)
                 name = event.name
+                name = name.strip()
                 if name.startswith("PAPI_"):
                     name = name[5:]
                 setattr(Event, name, event)
+                Event.__events__.append(name)
             if PAPI_enum_event(&code, PAPI_ENUM_ALL) != PAPI_OK:
                 break

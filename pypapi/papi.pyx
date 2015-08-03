@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from __future__ import print_function
+
 include "papihdr.pxi"
 
 
@@ -41,16 +44,15 @@ class Event(object):
     @classmethod
     def describe_events(cls):
         """Describe all :class:`Event`\s"""
-        print "Supported events:"
-        print "*****************\n"
+        print("Supported events:")
+        print("*****************\n")
         for event in cls.__events__:
             ev = getattr(cls, event)
-            print ev
-            print ""
+            print(ev, "\n")
 
     def __init__(self, native, info):
         self.code = info["event_code"]
-        self.name = info["symbol"]
+        self.name = info["symbol"].strip()
         self.description = info["short_descr"].strip()
         self.long_description = info["long_descr"].strip()
         self.typ = "native" if native else "preset"
@@ -270,9 +272,23 @@ def populate_events():
         while True:
             if PAPI_query_event(code) == PAPI_OK:
                 CHKERR(PAPI_get_event_info(code, &info))
-                event = Event(native, info)
+                pyinfo = {}
+                pyinfo["event_code"] = info.event_code
+                pyinfo["symbol"] = S_(info.symbol)
+                pyinfo["short_descr"] = S_(info.short_descr)
+                pyinfo["long_descr"] = S_(info.long_descr)
+                pyinfo["component_index"] = info.component_index
+                pyinfo["units"] = S_(info.units)
+                pyinfo["location"] = info.location
+                pyinfo["data_type"] = info.data_type
+                pyinfo["value_type"] = info.value_type
+                pyinfo["timescope"] = info.timescope
+                pyinfo["update_type"] = info.update_type
+                pyinfo["update_freq"] = info.update_freq
+                pyinfo["count"] = info.count
+                pyinfo["event_type"] = info.event_type
+                event = Event(native, pyinfo)
                 name = event.name
-                name = name.strip()
                 if name.startswith("PAPI_"):
                     name = name[5:]
                 setattr(Event, name, event)
